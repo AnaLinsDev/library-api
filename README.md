@@ -64,7 +64,7 @@ Through this project, I practiced:
 - RESTful API design
 - HTTP methods and status codes
 - Dependency Injection
-- Layered Architecture
+- Layered Organization (Folders)
 - DTOs
 - Business rule implementation
 - Input validation
