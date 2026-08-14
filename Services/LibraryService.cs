@@ -1,5 +1,6 @@
 ﻿using LibraryAPI.DTO;
 using LibraryAPI.Enums;
+using LibraryAPI.Exceptions;
 using LibraryAPI.Helpers;
 using LibraryAPI.Models;
 using System.Collections.Generic;
@@ -49,26 +50,26 @@ public class LibraryService
         BookRequest request)
     {
         if (request.Title.Count() < 2 || request.Title.Count() > 120)
-            throw new Exception("Title must have between 2 and 120 char");
+            throw new BusinessException("Title must have between 2 and 120 char");
 
         if (request.Author.Count() < 2 || request.Author.Count() > 120)
-            throw new Exception("Author must have between 2 and 120 char");
+            throw new BusinessException("Author must have between 2 and 120 char");
 
         if (request.Price < 0)
-            throw new Exception("Price can't be negative.");
+            throw new BusinessException("Price can't be negative.");
 
         if (request.Stock < 0)
-            throw new Exception("Stock can't be negative.");
+            throw new BusinessException("Stock can't be negative.");
 
         if (string.IsNullOrWhiteSpace(request.Genre))
-            throw new Exception("Genre is required.");
+            throw new BusinessException("Genre is required.");
 
         if (BookTitleAndAuthorAlreadyExists(
             libraryBooks,
             bookId,
             request))
         {
-            throw new Exception(
+            throw new ConflictException(
                 "A book with this title and author already exists.");
         }
 

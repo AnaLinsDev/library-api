@@ -9,8 +9,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddRouting(option => option.LowercaseUrls = true);
 
-var test = builder.Configuration.GetSection("prop_001").Value;
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

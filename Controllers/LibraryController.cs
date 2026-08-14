@@ -1,5 +1,6 @@
 ﻿using LibraryAPI.DTO;
 using LibraryAPI.Enums;
+using LibraryAPI.Exceptions;
 using LibraryAPI.Helpers;
 using LibraryAPI.Models;
 using LibraryAPI.Services;
@@ -104,6 +105,7 @@ public class LibraryController : LibraryBaseController
     [EndpointSummary("Create new book")]
     [ProducesResponseType(typeof(BookResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public IActionResult Create([FromBody] CreateBookRequest request)
     {
         try
@@ -135,7 +137,12 @@ public class LibraryController : LibraryBaseController
             };
             return Created(string.Empty, response);
         }
-        catch (Exception ex)
+
+        catch (ConflictException ex)
+        {
+            return Conflict(ex.Message);
+        }
+        catch (BusinessException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -145,8 +152,10 @@ public class LibraryController : LibraryBaseController
     [HttpPut]
     [EndpointSummary("Update book")]
     [Route("{id}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateBookRequest request)
     {
         var bookToUpdate = libraryBooks.Find(book => book.Id == id);
@@ -165,9 +174,14 @@ public class LibraryController : LibraryBaseController
                 request
             );
 
-            return Ok($"Updated book with id {id}");
+            return NoContent();
         }
-        catch (Exception ex)
+
+        catch (ConflictException ex)
+        {
+            return Conflict(ex.Message);
+        }
+        catch (BusinessException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -176,7 +190,7 @@ public class LibraryController : LibraryBaseController
     [HttpDelete]
     [EndpointSummary("Delete book")]
     [Route("{id}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public IActionResult Delete([FromRoute] Guid id)
     {
@@ -189,7 +203,7 @@ public class LibraryController : LibraryBaseController
 
         libraryBooks.Remove(bookToRemove);
 
-        return Ok($"Deleted book with id {id}");
+        return NoContent();
     }
 
 }
